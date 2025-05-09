@@ -10,11 +10,20 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Conversation {
+  conversation_id String    @id @unique
+  created_at      DateTime
+  messages        Message[]
+  has_ended       Boolean  @default(false)
 
-    @@index([name])
+}
+
+model Message {
+  message_id      String    @id @unique
+  conversation_id String
+  message_type    String
+  message_content String
+  role            String
+  created_at      DateTime
+  conversation    Conversation @relation(fields: [conversation_id], references: [conversation_id])
 }
