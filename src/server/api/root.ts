@@ -4,7 +4,7 @@ import { createTRPCRouter } from './trpc';
 
 export const appRouter = createTRPCRouter({
   chat: chatRouter,
-  // posts: postRouter
+  posts: postRouter
   //  Add other routers here, e.g.:
   //  posts: postRouter,
   //  users: userRouter,
