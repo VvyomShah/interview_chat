@@ -17,7 +17,7 @@ export const useChat = (conversationId: string | null) => {
 
   // Get conversation query
   const getConversationQuery = api.chat.getConversation.useQuery(
-    { conversationId: conversationId || "" },
+    { conversationId: conversationId ?? "" }, // Use nullish coalescing
     {
       enabled: !!conversationId,
     },
@@ -31,14 +31,19 @@ export const useChat = (conversationId: string | null) => {
     if (getConversationQuery.data?.messages) {
       try {
         const formattedMessages = getConversationQuery.data.messages.map((msg) => ({
-        id: msg.message_id,
-        content: msg.message_content,
-        role: msg.role as "user" | "assistant",
-        type: msg.message_type,
-      }))
-      setMessages(formattedMessages)
-      } catch (error: any) {
-        setError(error)
+          id: msg.message_id,
+          content: msg.message_content,
+          role: msg.role as "user" | "assistant",
+          type: msg.message_type,
+        }))
+        setMessages(formattedMessages)
+      } catch (error: unknown) {
+        // Specify unknown type instead of any
+        if (error instanceof Error) {
+          setError(error)
+        } else {
+          setError(new Error(String(error)))
+        }
       }
     }
   }, [getConversationQuery.data])
@@ -70,10 +75,14 @@ export const useChat = (conversationId: string | null) => {
             role: "assistant",
           }
           setMessages((prev) => [...prev, aiResponse])
-          return result
         }
-      } catch (err: any) {
-        setError(err)
+      } catch (error: unknown) {
+        // Specify unknown type instead of any
+        if (error instanceof Error) {
+          setError(error)
+        } else {
+          setError(new Error(String(error)))
+        }
       } finally {
         setIsSubmitting(false)
       }

@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useEffect, useRef } from "react"
 import { useChat } from "~/hooks/useChat"
 import { useConversations } from "~/hooks/useConversations"
@@ -8,15 +9,16 @@ import { ChatContainer } from "./components/ChatContainer"
 import { ChatInput } from "./components/ChatInput"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 
-export default function ChatPage() {
+export default function EnhancedChatPage() {
   const [conversationId, setConversationId] = useState<string | null>(null)
+  const [input, setInput] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Use the conversations hook
-  const { startNewConversation, refetchConversations, conversations} = useConversations()
+  const { startNewConversation, refetchConversations, conversations } = useConversations()
 
   // Use the chat hook with the selected conversation ID
-  const { messages, isLoading, isSubmitting, error, sendMessage, refetchMessages } = useChat(conversationId)
+  const { messages, isLoading, isSubmitting, sendMessage, refetchMessages } = useChat(conversationId)
 
   // Handle starting a new conversation
   const handleStartConversation = async () => {
@@ -29,18 +31,21 @@ export default function ChatPage() {
   // Handle switching to a different conversation
   const handleSwitchConversation = (id: string) => {
     setConversationId(id)
-    refetchMessages()
+    // Fix floating promise by using void
+    void refetchMessages()
   }
 
-  // Handle sending a message
-  const handleSendMessage = async(content: string) => {
-    if (!content.trim() || !conversationId || isSubmitting) return
+  // Create an adapter function that matches the expected signature
+  const handleSendMessageAdapter = (message: string) => {
+    if (!message.trim() || !conversationId || isSubmitting) return
 
-    const response = await sendMessage(content)
-    if (response?.shouldEnd){
-      refetchConversations()
-    }
+    void sendMessage(message)
+    void refetchConversations()
   }
+
+  const conversationEnded = conversations.some(
+    (conversation) => conversation.id === conversationId && conversation.hasEnded === true,
+  )
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -53,11 +58,6 @@ export default function ChatPage() {
       void refetchMessages()
     }
   }, [conversationId, refetchMessages])
-
-  // Check if the conversation has ended
-  const conversationEnded = conversations.some(
-    (conversation) => conversation.id === conversationId &&
-                      conversation.hasEnded === true)
 
   return (
     <ChatLayout
@@ -72,7 +72,11 @@ export default function ChatPage() {
           <ChatContainer messages={messages} isLoading={isLoading} />
 
           <div className="mt-4">
-            <ChatInput onSendMessage={handleSendMessage} isSubmitting={isSubmitting} disabled={conversationEnded} />
+            <ChatInput
+              onSendMessage={handleSendMessageAdapter}
+              isSubmitting={isSubmitting}
+              disabled={conversationEnded}
+            />
           </div>
 
           {conversationEnded && (

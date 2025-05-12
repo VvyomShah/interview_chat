@@ -15,36 +15,45 @@ export const useConversations = () => {
     enabled: false,
   })
 
-
   // Start a new conversation
   const startNewConversation = useCallback(async () => {
-    let returnObject: {
-      conversationId: string,
-      question: string,
-      error: any
-    } = {conversationId: "", question: "", error: undefined}
+    const returnObject: {
+      conversationId: string
+      question: string
+      error: string | undefined
+    } = { conversationId: "", question: "", error: undefined }
 
     try {
       const result = await startConversationQuery.refetch()
       if (result.data?.conversationId) {
         void allConversationsQuery.refetch()
-        returnObject.conversationId = result.data.conversationId,
-        returnObject.question = result.data.question,
+        returnObject.conversationId = result.data.conversationId
+        returnObject.question = result.data.question.question
         returnObject.error = result?.error?.message
       }
-      return returnObject;
-    } catch (err: any) {
-      setError(err)
-      console.error(err)
-      logger.error(err);
-      
-      returnObject.error = err
+      return returnObject
+    } catch (error: unknown) {
+      // Specify unknown type instead of any
+      if (error instanceof Error) {
+        setError(error)
+        console.error(error)
+        logger.error(error)
+
+        returnObject.error = error.message
+      } else {
+        const errorMessage = String(error)
+        setError(new Error(errorMessage))
+        console.error(errorMessage)
+        logger.error(errorMessage)
+
+        returnObject.error = errorMessage
+      }
       return returnObject
     }
   }, [startConversationQuery, allConversationsQuery])
 
   return {
-    conversations: allConversationsQuery.data || [],
+    conversations: allConversationsQuery.data ?? [], // Use nullish coalescing
     isLoading: allConversationsQuery.isLoading || startConversationQuery.isLoading,
     error,
     startNewConversation,

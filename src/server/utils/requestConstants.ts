@@ -1,6 +1,6 @@
-import { type InterviewQuestion, type NonEmptyArray } from "~/types/common";
+import type { InterviewQuestion, NonEmptyArray } from "~/types/common"
 
-export const systemPrompt: string = `
+export const systemPrompt = `
 You are a very polite, friendly and professional judge for an interview. Use the previous turns of the conversation to maintain context throughout the interview.
 
 Determine if the candidate has fully answered the current question, considering whether they addressed all parts of the question and provided sufficient detail. Do not ask for clarification outside of the context ofthe questions.
@@ -30,8 +30,11 @@ Some information about the role - Hiring for a Software Engineer with 3 YoE at p
 `
 
 export const interviewQuestions: NonEmptyArray<InterviewQuestion> = [
-    {question: "What are your salary expectations?", context: "salary ask must be <= max salary"},
-    {question: "Have you graduated?", context: "When, from where, gpa? If not graduated, directly end interview (IMPORTANT SET shouldEnd=true)."},
-    {question: "Tell me about your background.", context: "Focus on technical aspects."},
-    {question: "Why do you want to work here?", context: "General interest."},
-];
+  { question: "What are your salary expectations?", context: "salary ask must be <= max salary" },
+  {
+    question: "Have you graduated?",
+    context: "When, from where, gpa? If not graduated, directly end interview (IMPORTANT SET shouldEnd=true).",
+  },
+  { question: "Tell me about your background.", context: "Focus on technical aspects." },
+  { question: "Why do you want to work here?", context: "General interest." },
+]

@@ -15,7 +15,7 @@ export function WelcomeCard({ onStartInterview, isLoading }: WelcomeCardProps) {
         <CardHeader>
           <CardTitle className="text-2xl">Welcome to the Interview Simulator</CardTitle>
           <CardDescription>
-            Practice your interview skills with our AI interviewer. The system will ask you common interview questions
+            The system will ask you common interview questions
             and provide follow-up questions based on your responses.
           </CardDescription>
         </CardHeader>

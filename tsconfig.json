@@ -39,5 +39,6 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
+  "ignores": ["src/components/ui/*"],
   "exclude": ["node_modules"]
 }
