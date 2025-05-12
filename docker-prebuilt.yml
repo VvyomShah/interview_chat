@@ -1,0 +1,8 @@
+services:
+  interview_chat:
+    image: vvyomshah/interview_chat:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./.env
+        required: true
